@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 
@@ -36,12 +37,12 @@ public class drivetrain extends SubsystemBase {
   private Translation2d m_backRightLocation; 
 
   public drivetrain() {
-    front_left = new swerve(1,2);
-    front_right = new swerve(3,4);
-    back_left = new swerve(5,6);
-    back_right = new swerve(7,8);
+    front_left = new swerve(10,11,13);
+    front_right = new swerve(20,21,23);
+    back_left = new swerve(30,31,33);
+    back_right = new swerve(40,41,43);
 
-    m_gyro = new AHRS();
+    m_gyro = new AHRS(SPI.Port.kMXP);
     pose = new Pose2d();
     m_odometry = new SwerveDriveOdometry(swerve1, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.position(), front_right.position(),back_left.position(), back_right.position()});
 
@@ -67,6 +68,6 @@ public class drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_odometry.update(m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.position(), front_right.position(),back_left.position(), back_right.position()});
+    // m_odometry.update(m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.position(), front_right.position(),back_left.position(), back_right.position()});
   }
 }

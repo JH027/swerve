@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import javax.print.CancelablePrintJob;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.AnalogInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -30,10 +31,8 @@ public class swerve extends SubsystemBase {
 
   SwerveDriveKinematics swerve;
 
-  private final CANSparkMax drive;
-  private final CANSparkMax turn;
-
-  private final RelativeEncoder driveEncoder;
+  private final TalonFX drive;
+  private final TalonFX turn;
 
   private final CANcoder turnEncoder;
   
@@ -41,12 +40,11 @@ public class swerve extends SubsystemBase {
   private final PIDController m_pidturn;
 
   
-  public swerve(int driveId, int turnId) {
-    drive = new CANSparkMax(driveId, MotorType.kBrushless);
-    turn = new CANSparkMax(turnId, MotorType.kBrushless);
+  public swerve(int driveId, int turnId, int cancoderId) {
+    drive = new TalonFX(driveId);
+    turn = new TalonFX(turnId);
 
-    driveEncoder = drive.getEncoder();
-    turnEncoder = new CANcoder(SwerveConstants.turnEncoderId);
+    turnEncoder = new CANcoder(cancoderId,"CANivore");
 
     m_pidturn = new PIDController(0, 0, 0);
     m_piddrive = new PIDController(0,0,0);
@@ -54,11 +52,11 @@ public class swerve extends SubsystemBase {
 
   public void setDesiredStates(SwerveModuleState state){
     turn.set(MathUtil.clamp(m_pidturn.calculate(turnEncoder.getPosition().getValueAsDouble(),state.angle.getRadians()),-0.5,0.5));
-    drive.set(MathUtil.clamp(m_piddrive.calculate(driveEncoder.getVelocity(),state.speedMetersPerSecond), -0.5, 0.5));
+    drive.set(MathUtil.clamp(m_piddrive.calculate(drive.getVelocity().getValueAsDouble(),state.speedMetersPerSecond), -0.5, 0.5));
   }
 
   public SwerveModulePosition position(){
-    return new SwerveModulePosition(driveEncoder.getPosition(),new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
+    return new SwerveModulePosition(drive.getPosition().getValueAsDouble(),new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
   }
 
   public void stop(){
