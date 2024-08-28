@@ -10,12 +10,19 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.driving;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.drivetrain;
+import frc.robot.subsystems.shooter;
 import frc.robot.subsystems.swerve;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+// import 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -27,14 +34,19 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final drivetrain m_drivetrain = new drivetrain();
-
+  private final shooter m_shooter = new shooter();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final XboxController m_driverController = new XboxController(OperatorConstants.kDriverControllerPort);
+  private final SendableChooser<Command> autoChooser;
 
+  // NamedCommands.registerCommand("shoot", m_shooter.shoot());
+  NamedCommands.registerCommand("shoot", m_shooter.shoot());
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureDrivetrainBindings();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);  
   }
 
   /**
@@ -60,6 +72,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    //  return Autos.exampleAuto(m_exampleSubsystem);
+    return autoChooser.getSelected();
+
   }
 }

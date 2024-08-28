@@ -26,7 +26,10 @@ public class driving extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drivetrain.move(m_driverController.getLeftY(), m_driverController.getLeftX(), m_driverController.getRightX()); 
+    double leftY = m_driverController.getLeftY()<0.05 ? 0:m_driverController.getLeftY();
+    double leftX = m_driverController.getLeftX()<0.05 ? 0:m_driverController.getLeftX();
+    double rightX = m_driverController.getRightX()<0.05 ? 0:m_driverController.getRightX();
+    m_drivetrain.move(leftY, leftX, rightX); 
   }
 
   // Called once the command ends or is interrupted.

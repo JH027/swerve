@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 
@@ -46,14 +47,27 @@ public class swerve extends SubsystemBase {
 
     turnEncoder = new CANcoder(cancoderId,"CANivore");
 
-    m_pidturn = new PIDController(0.01, 0, 0);
-    m_piddrive = new PIDController(0.01,0,0);
+    m_pidturn = new PIDController(0, 0, 0);
+    m_piddrive = new PIDController(0.01, 0,0);
   }
 
   public void setDesiredStates(SwerveModuleState state){
-    turn.set(MathUtil.clamp(m_pidturn.calculate(turnEncoder.getPosition().getValueAsDouble(),state.angle.getRadians()),-0.5,0.5));
-    drive.set(MathUtil.clamp(m_piddrive.calculate(drive.getVelocity().getValueAsDouble(),state.speedMetersPerSecond), -0.5, 0.5));
+    
+    turn.set(m_pidturn.calculate(turnEncoder.getPosition().getValueAsDouble(),state.angle.getRadians()));
+    drive.set(m_piddrive.calculate(drive.getVelocity().getValueAsDouble(),state.speedMetersPerSecond));
+    SmartDashboard.putNumber("output", m_pidturn.calculate(turnEncoder.getPosition().getValueAsDouble(),state.angle.getRadians()));
+    
+    /*
+    turn.set(MathUtil.clamp(state.angle.getRadians(),-0.5,0.5));
+    drive.set(MathUtil.clamp(state.speedMetersPerSecond,-0.5, 0.5));
+    SmartDashboard.putNumber("turn",state.angle.getRadians());
+    SmartDashboard.putNumber("drive",state.speedMetersPerSecond);
+    */
   }
+  public SwerveModuleState getState(){
+    return new SwerveModuleState(drive.getVelocity().getValueAsDouble(),new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
+  }
+  
 
   public SwerveModulePosition position(){
     return new SwerveModulePosition(drive.getPosition().getValueAsDouble(),new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));

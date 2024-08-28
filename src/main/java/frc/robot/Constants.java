@@ -20,4 +20,7 @@ public final class Constants {
     public static final double distance = 0.3429;
     public static final int turnEncoderId = 0;
   }
+  public static class IndexerConstants{
+    public static final int beamBreakId = 7;
+  }
 }
