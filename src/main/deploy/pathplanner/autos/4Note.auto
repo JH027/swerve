@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3199609518051147,
+      "y": 6.979306697845459
+    },
+    "rotation": 1.2268179404877009
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4Note1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4Note2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4Note3"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

@@ -46,8 +46,8 @@ public class swerve extends SubsystemBase {
 
     turnEncoder = new CANcoder(cancoderId,"CANivore");
 
-    m_pidturn = new PIDController(0, 0, 0);
-    m_piddrive = new PIDController(0,0,0);
+    m_pidturn = new PIDController(0.01, 0, 0);
+    m_piddrive = new PIDController(0.01,0,0);
   }
 
   public void setDesiredStates(SwerveModuleState state){
