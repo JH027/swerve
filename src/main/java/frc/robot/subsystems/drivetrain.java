@@ -90,7 +90,6 @@ public class drivetrain extends SubsystemBase {
       this // Reference to this subsystem to set requirements
     );
   }
-  }
 
   public void move(double forward, double side, double rotation){
     ChassisSpeeds speeds = new ChassisSpeeds(forward, side, rotation);
