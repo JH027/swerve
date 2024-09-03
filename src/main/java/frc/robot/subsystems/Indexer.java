@@ -30,6 +30,9 @@ public class Indexer extends SubsystemBase {
   public Boolean stuck(){
     return beam.get();
   }
+  public void stop(){
+    run(0);
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

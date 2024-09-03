@@ -6,13 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivetrain;
 
 public class driving extends Command {
   /** Creates a new driving. */
   private final drivetrain m_drivetrain;
-  private final XboxController m_driverController; 
-  public driving(drivetrain m_drivetrain, XboxController m_driverController) {
+  private final CommandXboxController m_driverController; 
+  public driving(drivetrain m_drivetrain, CommandXboxController m_driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.m_drivetrain = m_drivetrain;
     this.m_driverController = m_driverController;

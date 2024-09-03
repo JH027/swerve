@@ -53,7 +53,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final XboxController m_driverController = new XboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final SendableChooser<Command> autoChooser;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -61,7 +61,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("intake", new loadNote(m_intake, m_driverController));
     NamedCommands.registerCommand("indexer", new passNote(m_indexer, m_driverController));
     // Configure the trigger bindings
-    configureDrivetrainBindings();
+    //configureDrivetrainBindings();
     configureIndexerBindings();
     configureIntakeBindings();
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -81,9 +81,14 @@ public class RobotContainer {
     m_drivetrain.setDefaultCommand(new driving(m_drivetrain,m_driverController));
   }
   private void configureIndexerBindings(){
-    m_indexer.setDefaultCommand(new passNote(m_indexer, m_driverController));
+    m_driverController.rightBumper().onTrue(m_indexer.runOnce(() -> m_indexer.run(0.3)));
+    m_driverController.leftBumper().onTrue(m_indexer.runOnce(() -> m_indexer.stop()));
   }
   private void configureIntakeBindings(){
+    // m_intake.setDefaultCommand(new loadNote(m_intake,m_driverController));
+    m_driverController.b().onTrue(m_intake.runOnce(() -> m_intake.in(0.3)));
+    m_driverController.x().onTrue(m_intake.runOnce(() -> m_intake.in(-0.3)));
+    m_driverController.a().onTrue(m_intake.runOnce(() -> m_intake.stop()));
 
   }
   private void configureBindings() {

@@ -6,14 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Indexer;
 
 public class passNote extends Command {
   /** Creates a new passNote. */
   private Indexer m_indexer;
-  private final XboxController m_driverController; 
+  private final CommandXboxController m_driverController; 
 
-  public passNote(Indexer m_indexer, XboxController m_driverController) {
+  public passNote(Indexer m_indexer, CommandXboxController m_driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.m_indexer = m_indexer;
     this.m_driverController = m_driverController;
@@ -27,9 +28,7 @@ public class passNote extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_driverController.getBButton()){
-      m_indexer.run(0);
-    }
+    m_indexer.run(0.3);
   }
 
   // Called once the command ends or is interrupted.

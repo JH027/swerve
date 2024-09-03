@@ -6,14 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Intake;
 
 public class loadNote extends Command {
   /** Creates a new loadNote. */
   private final Intake m_intake;
-  private final XboxController m_driverController; 
+  private final CommandXboxController m_driverController; 
 
-  public loadNote(Intake m_intake, XboxController m_driverController) {
+  public loadNote(Intake m_intake, CommandXboxController m_driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.m_intake = m_intake; 
     this.m_driverController = m_driverController;
@@ -27,9 +28,7 @@ public class loadNote extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_driverController.getAButton()){
-      m_intake.in(0);
-    }
+    m_intake.in(0.3);
   }
 
   // Called once the command ends or is interrupted.

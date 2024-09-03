@@ -21,8 +21,8 @@ public class Intake extends SubsystemBase {
     time = new Timer();
   }
   public void in(double speed){
-    right.set(speed);
-    left.set(-speed);
+    right.set(-speed);
+    left.set(speed);
   }
   public void timed(double stop,double speed){
     time.start();
