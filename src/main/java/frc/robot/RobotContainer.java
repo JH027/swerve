@@ -59,7 +59,7 @@ public class RobotContainer {
   public RobotContainer() {
     NamedCommands.registerCommand("shoot", new shoot(m_shooter));
     NamedCommands.registerCommand("intake", new loadNote(m_intake, m_driverController));
-    NamedCommands.registerCommand("indexer", new passNote(m_indexer, m_driverController));
+    NamedCommands.registerCommand("index", new passNote(m_indexer, m_driverController));
     // Configure the trigger bindings
     //configureDrivetrainBindings();
     configureIndexerBindings();

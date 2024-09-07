@@ -74,8 +74,8 @@ public class drivetrain extends SubsystemBase {
       () -> kinematics.toChassisSpeeds(frontLeftState, frontRightState, backLeftState, backRightState), 
       this::move2,
       new HolonomicPathFollowerConfig( 
-        new PIDConstants(0, 0.0, 0.0), 
-        new PIDConstants(0, 0.0, 0.0), 
+        new PIDConstants(5, 0.0, 0.0), 
+        new PIDConstants(5, 0.0, 0.0), 
         4.5, 
         0.3429, 
         new ReplanningConfig() 
