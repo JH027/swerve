@@ -8,17 +8,27 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.JoystickDrive;
+import frc.robot.commands.loadNote;
+import frc.robot.commands.passNote;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveModule;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+// import 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -26,6 +36,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+   public Command getAutonomousCommand() {
+    PathPlannerPath path = PathPlannerPath.fromPathFile("swerve");
+    return AutoBuilder.followPath(path);
+    // An example command will be run in autonomous
+    //  return Autos.exampleAuto(m_exampleSubsystem);
+  }
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
@@ -38,13 +54,16 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // NamedCommands.registerCommand("shoot", new shoot(shooter));
+    NamedCommands.registerCommand("intake", new loadNote(m_intake, m_driverController));
+    NamedCommands.registerCommand("index", new passNote(indexer, m_driverController));
     // Configure the trigger bindings
     m_drivetrain.setDefaultCommand(new JoystickDrive(m_drivetrain,m_driverController));
     configureBindings();
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
+  //  * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
    * predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
@@ -53,6 +72,17 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureDrivetrainBindings(){
+  }
+  private void configureIndexerBindings(){
+    m_driverController.rightBumper().onTrue(indexer.runOnce(() -> indexer.run(0.3)));
+    m_driverController.leftBumper().onTrue(indexer.runOnce(() -> indexer.stop()));
+  }
+  private void configureIntakeBindings(){
+    // m_intake.setDefaultCommand(new loadNote(m_intake,m_driverController));
+    m_driverController.b().onTrue(m_intake.runOnce(() -> m_intake.intake(0.3)));
+    m_driverController.x().onTrue(m_intake.runOnce(() -> m_intake.intake(-0.3)));
+    m_driverController.a().onTrue(m_intake.runOnce(() -> m_intake.stop()));
+
   }
   private void configureBindings() {
     
@@ -73,8 +103,5 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
-  }
+ 
 }

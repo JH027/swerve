@@ -22,4 +22,7 @@ public final class Constants {
 
     public static final double driveConversionFactor = 1 / 6.12 * 4 * Math.PI * 25.4 / 1000;
   }
+  public static class IndexerConstants{
+    public static final int beamBreakId = 7;
+  }
 }
