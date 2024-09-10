@@ -7,12 +7,15 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.driving;
+import frc.robot.commands.JoystickDrive;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.drivetrain;
-import frc.robot.subsystems.swerve;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.SwerveModule;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -26,15 +29,18 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  private final drivetrain m_drivetrain = new drivetrain();
+  private final Drivetrain m_drivetrain = new Drivetrain();
+  private final Intake m_intake = new Intake();
+  private final Indexer indexer = new Indexer();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final XboxController m_driverController = new XboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    configureDrivetrainBindings();
+    m_drivetrain.setDefaultCommand(new JoystickDrive(m_drivetrain,m_driverController));
+    configureBindings();
   }
 
   /**
@@ -47,10 +53,19 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureDrivetrainBindings(){
-    m_drivetrain.setDefaultCommand(new driving(m_drivetrain,m_driverController));
   }
   private void configureBindings() {
     
+    // m_driverController.b().onTrue(Commands.sequence(
+    //   m_intake.runOnce(() -> m_intake.intake(0.5)),
+    //   indexer.runOnce(() -> indexer.run(0.3))
+    // ));
+    m_driverController.a().onTrue(m_intake.runOnce(() -> m_intake.outtake(0.1)));
+    m_driverController.x().onTrue(m_intake.runOnce(() -> m_intake.stop()));
+    m_driverController.y().onTrue(indexer.runOnce(() -> indexer.stop()));
+    // m_driverController.leftBumper().onTrue(m)
+
+    // m_driverController.rightBumper().onTrue();
   }
 
   /**

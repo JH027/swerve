@@ -4,20 +4,15 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.drivetrain;
 
-public class driving extends Command {
-  /** Creates a new driving. */
-  private final drivetrain m_drivetrain;
-  private final XboxController m_driverController; 
-  public driving(drivetrain m_drivetrain, XboxController m_driverController) {
+public class TestCommands extends Command {
+  /** Creates a new TestCommands. */
+  public TestCommands() {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.m_drivetrain = m_drivetrain;
-    this.m_driverController = m_driverController;
-    addRequirements(m_drivetrain);
   }
+
+  
 
   // Called when the command is initially scheduled.
   @Override
@@ -25,9 +20,7 @@ public class driving extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    m_drivetrain.move(m_driverController.getLeftY(), m_driverController.getLeftX(), m_driverController.getRightX()); 
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

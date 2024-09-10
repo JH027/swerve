@@ -9,13 +9,13 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Timer;
 
-public class shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase {
   /** Creates a new shooter. */
   private final CANSparkMax motor1;
   private final CANSparkMax motor2;
   private final Timer time = new Timer();
   
-  public shooter() {
+  public Shooter() {
     motor1 = new CANSparkMax(1,MotorType.kBrushless);
     motor2 = new CANSparkMax(2,MotorType.kBrushless);
   }

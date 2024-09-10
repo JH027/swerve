@@ -5,12 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.shooter;
+import frc.robot.subsystems.Shooter;
 
-public class shoot extends Command {
+public class Shoot extends Command {
   /** Creates a new shoot. */
-  private final shooter m_shooter;
-  public shoot(shooter m_shooter) {
+  private final Shooter m_shooter;
+  public Shoot(Shooter m_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.m_shooter = m_shooter;
     addRequirements(m_shooter);

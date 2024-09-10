@@ -19,5 +19,7 @@ public final class Constants {
   public static class SwerveConstants{
     public static final double distance = 0.3429;
     public static final int turnEncoderId = 0;
+
+    public static final double driveConversionFactor = 1 / 6.12 * 4 * Math.PI * 25.4 / 1000;
   }
 }
