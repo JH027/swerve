@@ -28,7 +28,7 @@ public class loadNote extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_intake.in(0.3);
+    m_intake.intake(0.3);
   }
 
   // Called once the command ends or is interrupted.
