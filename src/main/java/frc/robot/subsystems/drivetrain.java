@@ -23,14 +23,15 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 
-public class Drivetrain extends SubsystemBase {
+public class drivetrain extends SubsystemBase {
   /** Creates a new drivetrain. */
-  private SwerveModule front_left;
-  private SwerveModule front_right;
-  private SwerveModule back_left;
-  private SwerveModule back_right;
+  private swerve front_left;
+  private swerve front_right;
+  private swerve back_left;
+  private swerve back_right;
 
   private AHRS m_gyro;
+  private Pose2d pose;
 
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry m_odometry;
@@ -40,13 +41,20 @@ public class Drivetrain extends SubsystemBase {
   private Translation2d m_backLeftLocation;
   private Translation2d m_backRightLocation; 
 
-  public Drivetrain() {
-    front_left = new SwerveModule(10,11,13, 0.107666015625);
-    front_right = new SwerveModule(20,21,23, 0.329833984375);
-    back_left = new SwerveModule(30,31,33, -0.31396484375);
-    back_right = new SwerveModule(40,41,43, 0.428955078125);
+  private SwerveModuleState frontLeftState;
+  private SwerveModuleState frontRightState;
+  private SwerveModuleState backLeftState;
+  private SwerveModuleState backRightState;
+
+  public drivetrain() {
+    front_left = new swerve(10,11,13);
+    front_right = new swerve(20,21,23);
+    back_left = new swerve(30,31,33);
+    back_right = new swerve(40,41,43);
 
     m_gyro = new AHRS(SPI.Port.kMXP);
+    pose = new Pose2d();
+    m_odometry = new SwerveDriveOdometry(kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.position(), front_right.position(),back_left.position(), back_right.position()});
 
     m_frontLeftLocation = new Translation2d(-SwerveConstants.distance, SwerveConstants.distance);
     m_frontRightLocation = new Translation2d(SwerveConstants.distance, SwerveConstants.distance);
@@ -55,31 +63,62 @@ public class Drivetrain extends SubsystemBase {
 
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation,m_frontRightLocation,m_backLeftLocation,m_backRightLocation);
 
-    m_odometry = new SwerveDriveOdometry(kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()});
-  }
+    frontLeftState = front_left.getState();
+    frontRightState = front_right.getState();
+    backLeftState = back_left.getState();
+    backRightState = back_right.getState();
 
-  public void drive(double xSpeed, double ySpeed, double rotation) {
-    var swerveModuleStates = kinematics.toSwerveModuleStates(
-      new ChassisSpeeds(xSpeed, ySpeed, rotation)
+    AutoBuilder.configureHolonomic(
+      this::getPose, 
+      this::resetPose,
+      () -> kinematics.toChassisSpeeds(frontLeftState, frontRightState, backLeftState, backRightState), 
+      this::move2,
+      new HolonomicPathFollowerConfig( 
+        new PIDConstants(0, 0.0, 0.0), 
+        new PIDConstants(0, 0.0, 0.0), 
+        4.5, 
+        0.3429, 
+        new ReplanningConfig() 
+      ),
+      () -> {
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+        return alliance.get() == DriverStation.Alliance.Red;
+      }
+      return false;
+      },
+      this // Reference to this subsystem to set requirements
     );
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 5.5);
-    front_left.setDesiredStates(swerveModuleStates[0]);
-    front_right.setDesiredStates(swerveModuleStates[1]);
-    back_left.setDesiredStates(swerveModuleStates[2]);
-    back_right.setDesiredStates(swerveModuleStates[3]);
   }
 
-  public Pose2d getPose() {
-    return new Pose2d(new Translation2d(m_odometry.getPoseMeters().getX(), m_odometry.getPoseMeters().getY()), new Rotation2d(m_gyro.getAngle()));
+  public void move(double forward, double side, double rotation){
+    ChassisSpeeds speeds = new ChassisSpeeds(forward, side, rotation);
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+    front_left.setDesiredStates(states[0]);
+    front_right.setDesiredStates(states[1]);
+    back_left.setDesiredStates(states[2]);
+    back_right.setDesiredStates(states[3]);
+  }
+  public void move2(ChassisSpeeds speeds){
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+    front_left.setDesiredStates(states[0]);
+    front_right.setDesiredStates(states[1]);
+    back_left.setDesiredStates(states[2]);
+    back_right.setDesiredStates(states[3]);
   }
 
-  // public void resetPose() {
-  //   m_odometry.resetPosition(new Ro);
-  // }
+  public Pose2d getPose(){
+    return new Pose2d(new Translation2d(m_odometry.getPoseMeters().getX(),m_odometry.getPoseMeters().getY()), m_gyro.getRotation2d());
+  }
+  public void resetPose(Pose2d currentPose){
+    m_odometry.resetPosition(m_gyro.getRotation2d(),  new SwerveModulePosition[] {
+      front_left.position(), front_right.position(),back_left.position(), back_right.position()},
+       currentPose);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_odometry.update(m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()});
+  // m_odometry.update(m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.position(), front_right.position(),back_left.position(), back_right.position()});
   }
 }
