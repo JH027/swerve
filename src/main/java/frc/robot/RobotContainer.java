@@ -15,6 +15,8 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveModule;
+import frc.robot.subsystems.Shooter;
+import frc.robot.commands.shoot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -36,27 +38,26 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-   public Command getAutonomousCommand() {
-    PathPlannerPath path = PathPlannerPath.fromPathFile("swerve");
-    return AutoBuilder.followPath(path);
-    // An example command will be run in autonomous
-    //  return Autos.exampleAuto(m_exampleSubsystem);
-  }
+  
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Intake m_intake = new Intake();
   private final Indexer indexer = new Indexer();
-
+  private final Shooter m_shooter = new Shooter();
+  private final SendableChooser<Command> autoChooser;
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // NamedCommands.registerCommand("shoot", new shoot(shooter));
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     NamedCommands.registerCommand("intake", new loadNote(m_intake, m_driverController));
     NamedCommands.registerCommand("index", new passNote(indexer, m_driverController));
+    NamedCommands.registerCommand("shoot", new shoot(m_shooter));
     // Configure the trigger bindings
     m_drivetrain.setDefaultCommand(new JoystickDrive(m_drivetrain,m_driverController));
     configureBindings();
@@ -103,5 +104,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
  
 }

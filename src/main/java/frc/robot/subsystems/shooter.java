@@ -16,8 +16,8 @@ public class Shooter extends SubsystemBase {
   private final Timer time = new Timer();
   
   public Shooter() {
-    motor1 = new CANSparkMax(1,MotorType.kBrushless);
-    motor2 = new CANSparkMax(2,MotorType.kBrushless);
+    motor1 = new CANSparkMax(53,MotorType.kBrushless);
+    motor2 = new CANSparkMax(54,MotorType.kBrushless);
   }
   public void shoot(double speed){
     motor1.set(speed);

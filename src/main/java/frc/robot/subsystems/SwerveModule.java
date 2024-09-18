@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,6 +41,9 @@ public class SwerveModule extends SubsystemBase {
   private final PIDController m_piddrive;
   private final PIDController m_pidturn;
 
+  //private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(SwerveConstants.driveKs, SwerveConstants.driveKv);
+  // private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0, 0);
+
   private final MagnetSensorConfigs sensorConfigs = new MagnetSensorConfigs();
 
   public SwerveModule(int driveId, int turnId, int cancoderId, double magnetOffset) {
@@ -48,8 +52,8 @@ public class SwerveModule extends SubsystemBase {
 
     turnEncoder = new CANcoder(cancoderId,"CANivore");
 
-    m_pidturn = new PIDController(0.25, 0, 0);
-    m_piddrive = new PIDController(0.2,0,0);
+    m_pidturn = new PIDController(0.4, 0, 0);
+    m_piddrive = new PIDController(0.2,0,0.0);
 
     m_pidturn.enableContinuousInput(0, 2 * Math.PI);
 
@@ -60,8 +64,9 @@ public class SwerveModule extends SubsystemBase {
   public void setDesiredStates(SwerveModuleState desiredState) {
     double m_moduleAngleRadians = turnEncoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
     SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(m_moduleAngleRadians));
-    turn.set(MathUtil.clamp(m_pidturn.calculate(m_moduleAngleRadians, state.angle.getRadians()), -0.5, 0.5));
-    drive.set(MathUtil.clamp(m_piddrive.calculate(drive.getVelocity().getValueAsDouble()*SwerveConstants.driveConversionFactor, state.speedMetersPerSecond), -0.5, 0.5));
+    turn.set(-MathUtil.clamp(m_pidturn.calculate(m_moduleAngleRadians, state.angle.getRadians()), -0.5, 0.5));
+    // drive.set(m_driveFeedforward.calculate(state.speedMetersPerSecond));
+    drive.set(state.speedMetersPerSecond);
 
     SmartDashboard.putNumber("turn output", MathUtil.clamp(m_pidturn.calculate(turnEncoder.getPosition().getValueAsDouble(), state.angle.getRadians()), -0.5, 0.5));
     SmartDashboard.putNumber("drive setpoint", state.speedMetersPerSecond);
@@ -82,6 +87,14 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(drive.getVelocity().getValueAsDouble(), new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
+  }
+
+  public TalonFX getDriveMotor() {
+    return drive;
+  }
+
+public TalonFX getTurnMotor() {
+    return turn;
   }
 
   @Override
