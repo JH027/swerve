@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -46,18 +47,18 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Indexer indexer = new Indexer();
   private final Shooter m_shooter = new Shooter();
-  private final SendableChooser<Command> autoChooser;
+  //private final SendableChooser<Command> autoChooser;
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // NamedCommands.registerCommand("shoot", new shoot(shooter));
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    NamedCommands.registerCommand("intake", new loadNote(m_intake, m_driverController));
-    NamedCommands.registerCommand("index", new passNote(indexer, m_driverController));
-    NamedCommands.registerCommand("shoot", new shoot(m_shooter));
+    // autoChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    // NamedCommands.registerCommand("intake", new loadNote(m_intake, m_driverController));
+    // NamedCommands.registerCommand("index", new passNote(indexer, m_driverController));
+    // NamedCommands.registerCommand("shoot", new shoot(m_shooter));
     // Configure the trigger bindings
     m_drivetrain.setDefaultCommand(new JoystickDrive(m_drivetrain,m_driverController));
     configureBindings();
@@ -105,7 +106,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return new InstantCommand(() -> {});
   }
  
 }

@@ -5,10 +5,6 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -68,28 +64,6 @@ public class Drivetrain extends SubsystemBase {
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation,m_frontRightLocation,m_backLeftLocation,m_backRightLocation);
 
     m_odometry = new SwerveDriveOdometry(kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()});
-  
-  AutoBuilder.configureHolonomic(
-      this::getPose, 
-      this::resetPose,
-      () -> kinematics.toChassisSpeeds(frontLeftState, frontRightState, backLeftState, backRightState), 
-      this::drive,
-      new HolonomicPathFollowerConfig( 
-        new PIDConstants(0, 0.0, 0.0), 
-        new PIDConstants(0, 0.0, 0.0), 
-        4.5, 
-        0.3429, 
-        new ReplanningConfig() 
-      ),
-      () -> {
-      var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-        return alliance.get() == DriverStation.Alliance.Red;
-      }
-      return false;
-      },
-      this // Reference to this subsystem to set requirements
-    );
   }
 
   public void drive(double xSpeed, double ySpeed, double rotation) {
