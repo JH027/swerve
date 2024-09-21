@@ -5,6 +5,10 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -64,6 +69,27 @@ public class Drivetrain extends SubsystemBase {
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation,m_frontRightLocation,m_backLeftLocation,m_backRightLocation);
 
     m_odometry = new SwerveDriveOdometry(kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()});
+    AutoBuilder.configureHolonomic(
+      this::getPose, 
+      this::resetPose,
+      () -> kinematics.toChassisSpeeds(front_left.getState(), front_right.getState(), back_left.getState(), back_right.getState()), 
+      this::move,
+      new HolonomicPathFollowerConfig( 
+        new PIDConstants(5, 0.0, 0.0), 
+        new PIDConstants(5, 0.0, 0.0), 
+        4.5, 
+        SwerveConstants.driveRadius, 
+        new ReplanningConfig() 
+      ),
+      () -> {
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+        return alliance.get() == DriverStation.Alliance.Red;
+      }
+      return false;
+      },
+      this
+      );
   }
 
   public void drive(double xSpeed, double ySpeed, double rotation) {
@@ -77,10 +103,22 @@ public class Drivetrain extends SubsystemBase {
     back_right.setDesiredStates(swerveModuleStates[3]);
   }
 
+  public void move(ChassisSpeeds speeds){
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+    front_left.setDesiredStates(states[0]);
+    front_right.setDesiredStates(states[1]);
+    back_left.setDesiredStates(states[2]);
+    back_right.setDesiredStates(states[3]);
+  }
+
   public Pose2d getPose() {
     return new Pose2d(new Translation2d(m_odometry.getPoseMeters().getX(), m_odometry.getPoseMeters().getY()), new Rotation2d(m_gyro.getAngle()));
   }
-
+  public void resetPose(Pose2d currentPose){
+    m_odometry.resetPosition(m_gyro.getRotation2d(),  new SwerveModulePosition[] {
+      front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()},
+       currentPose);
+  }
   public void resetGyro() {
     m_gyro.reset();
   }
