@@ -108,5 +108,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return AutoBuilder.buildAuto("2Note");
   }
+
+  public void graphValues() {
+    SmartDashboard.putNumber("heading", m_drivetrain.getGyro().getAngle());
+  }
  
 }

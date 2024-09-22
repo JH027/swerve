@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -79,7 +81,7 @@ public class Drivetrain extends SubsystemBase {
         new PIDConstants(5, 0.0, 0.0), 
         4.5, 
         SwerveConstants.driveRadius, 
-        new ReplanningConfig() 
+        new ReplanningConfig(true,true) 
       ),
       () -> {
       var alliance = DriverStation.getAlliance();
@@ -123,6 +125,10 @@ public class Drivetrain extends SubsystemBase {
     m_gyro.reset();
   }
 
+  public AHRS getGyro() {
+    return m_gyro;
+  }
+
   public SwerveDriveOdometry getOdometry() {
     return m_odometry;
   }
@@ -138,5 +144,6 @@ public class Drivetrain extends SubsystemBase {
         back_left.getPosition(), 
         back_right.getPosition()
       });
+    Logger.getInstance().recordOutput("SwerveModuleOdometry", m_odometry);
   }
 }
