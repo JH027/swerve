@@ -43,6 +43,10 @@ public class Robot extends LoggedRobot {
       Logger.addDataReceiver(new WPILOGWriter());
       new PowerDistribution(1, ModuleType.kRev).setSwitchableChannel(true);
     }
+
+    Logger.start();
+
+    // m_robotContainer.graphValues();
   }
 
   /**
@@ -82,7 +86,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    m_robotContainer.graphValues();
+    // m_robotContainer.graphValues();
   }
 
   @Override

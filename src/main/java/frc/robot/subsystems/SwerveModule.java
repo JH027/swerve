@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import javax.print.CancelablePrintJob;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -74,10 +76,12 @@ public class SwerveModule extends SubsystemBase {
     SmartDashboard.putNumber("turn setpoint", state.angle.getRadians());
     SmartDashboard.putNumber("turn encoder position", m_moduleAngleRadians);
     SmartDashboard.putNumber("drive output", MathUtil.clamp(m_piddrive.calculate(drive.getVelocity().getValueAsDouble(), state.speedMetersPerSecond), -0.5, 0.5));
+
+    Logger.recordOutput("drive output", state.speedMetersPerSecond);
   }
 
   public SwerveModulePosition getPosition(){
-    return new SwerveModulePosition(drive.getVelocity().getValueAsDouble(),new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
+    return new SwerveModulePosition(getDriveVelocity(), new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
   }
 
   public void stop(){
@@ -86,7 +90,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(drive.getVelocity().getValueAsDouble(), new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
+    return new SwerveModuleState(getDriveVelocity(), new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
   }
 
   public TalonFX getDriveMotor() {
@@ -95,7 +99,11 @@ public class SwerveModule extends SubsystemBase {
 
 public TalonFX getTurnMotor() {
     return turn;
-  }
+}
+
+public double getDriveVelocity() {
+  return drive.getVelocity().getValueAsDouble() * SwerveConstants.driveConversionFactor;
+}
 
   @Override
   public void periodic() {

@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.3667093515396118,
+      "y": 5.498956680297852
+    },
+    "rotation": 0.0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -8,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "GoForward"
+            "pathName": "2Note1"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

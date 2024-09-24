@@ -18,6 +18,8 @@ import frc.robot.subsystems.SwerveModule;
 import frc.robot.subsystems.Shooter;
 import frc.robot.commands.shoot;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -110,7 +112,7 @@ public class RobotContainer {
   }
 
   public void graphValues() {
-    SmartDashboard.putNumber("heading", m_drivetrain.getGyro().getAngle());
+    Logger.recordOutput("Test", 1);
   }
  
 }

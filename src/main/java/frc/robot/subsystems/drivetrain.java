@@ -4,15 +4,16 @@
 
 package frc.robot.subsystems;
 
-import java.util.logging.Logger;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -71,6 +72,7 @@ public class Drivetrain extends SubsystemBase {
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation,m_frontRightLocation,m_backLeftLocation,m_backRightLocation);
 
     m_odometry = new SwerveDriveOdometry(kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()});
+
     AutoBuilder.configureHolonomic(
       this::getPose, 
       this::resetPose,
@@ -144,6 +146,14 @@ public class Drivetrain extends SubsystemBase {
         back_left.getPosition(), 
         back_right.getPosition()
       });
-    Logger.getInstance().recordOutput("SwerveModuleOdometry", m_odometry);
+
+    Logger.recordOutput("Pose", getPose());
+    // Logger.recordOutput("Odometry", m_odometry);
+    Logger.recordOutput("States", new SwerveModuleState[]{
+      back_left.getState(),
+      back_right.getState(),
+      front_left.getState(),
+      front_right.getState()
+    });
   }
 }
