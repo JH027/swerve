@@ -20,7 +20,10 @@ public final class Constants {
     public static final double distance = 0.3429;
     public static final int turnEncoderId = 0;
     public static final double driveRadius = Math.hypot(0.5461/2,  0.635/2);
+    public static final double trackWidthX = 0.5461/2;
+    public static final double trackWidthY = 0.635/2;
     public static final double driveConversionFactor = 1 / 6.12 * 4 * Math.PI * 25.4 / 1000;
+    public static final double turnConversionFactor = 2 * Math.PI * 150.0 / 7;
   }
   public static class IndexerConstants{
     public static final int beamBreakId = 7;

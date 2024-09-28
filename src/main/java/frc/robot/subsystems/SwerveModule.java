@@ -25,6 +25,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -80,17 +81,28 @@ public class SwerveModule extends SubsystemBase {
     Logger.recordOutput("drive output", state.speedMetersPerSecond);
   }
 
-  public SwerveModulePosition getPosition(){
-    return new SwerveModulePosition(getDriveVelocity(), new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
+  public SwerveModulePosition getPosition(int num){
+    SwerveModulePosition pos = new SwerveModulePosition();
+    switch(num) {
+      case 1: pos = new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurnPosition()));
+      break;
+      case 2: pos = new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurnPosition()));
+      break;
+      case 3: pos = new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurnPosition()));
+      break;
+      case 4: pos = new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurnPosition()));
+    }
+    return pos; 
+
   }
 
-  public void stop(){
+  public void stop() {
     drive.set(0);
     turn.set(0);
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(getDriveVelocity(), new Rotation2d(turnEncoder.getPosition().getValueAsDouble()));
+    return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurnPosition()));
   }
 
   public TalonFX getDriveMotor() {
@@ -102,11 +114,19 @@ public TalonFX getTurnMotor() {
 }
 
 public double getDriveVelocity() {
-  return drive.getVelocity().getValueAsDouble() * SwerveConstants.driveConversionFactor;
+  return drive.getVelocity().getValueAsDouble();
 }
 
-  @Override
-  public void periodic() {
+public double getDrivePosition() {
+  return drive.getPosition().getValueAsDouble() * SwerveConstants.driveConversionFactor;
+}
+
+public double getTurnPosition() {
+  return Units.rotationsToRadians(turnEncoder.getAbsolutePosition().getValueAsDouble()) /*(150.0 / 7.0)*/;
+}
+
+@Override
+public void periodic() {
     // This method will be called once per scheduler run
-  }
+}
 }

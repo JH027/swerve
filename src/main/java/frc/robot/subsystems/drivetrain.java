@@ -71,7 +71,7 @@ public class Drivetrain extends SubsystemBase {
 
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation,m_frontRightLocation,m_backLeftLocation,m_backRightLocation);
 
-    m_odometry = new SwerveDriveOdometry(kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()});
+    m_odometry = new SwerveDriveOdometry(kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {front_left.getPosition(1), front_right.getPosition(2),back_left.getPosition(3), back_right.getPosition(4)});
 
     AutoBuilder.configureHolonomic(
       this::getPose, 
@@ -116,13 +116,18 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return new Pose2d(new Translation2d(m_odometry.getPoseMeters().getX(), m_odometry.getPoseMeters().getY()), new Rotation2d(m_gyro.getAngle()));
+    return new Pose2d(
+      new Translation2d(
+        back_left.getDrivePosition()+SwerveConstants.trackWidthX, 
+        back_left.getDrivePosition()+SwerveConstants.trackWidthY), 
+        m_gyro.getRotation2d());
   }
   public void resetPose(Pose2d currentPose){
     m_odometry.resetPosition(m_gyro.getRotation2d(),  new SwerveModulePosition[] {
-      front_left.getPosition(), front_right.getPosition(),back_left.getPosition(), back_right.getPosition()},
-       currentPose);
+      front_left.getPosition(1), front_right.getPosition(2),back_left.getPosition(3), back_right.getPosition(4)},
+      currentPose);
   }
+
   public void resetGyro() {
     m_gyro.reset();
   }
@@ -139,21 +144,29 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     m_odometry.update(
-      m_gyro.getRotation2d(), 
+      new Rotation2d(m_gyro.getAngle()%360), 
       new SwerveModulePosition[] {
-        front_left.getPosition(), 
-        front_right.getPosition(),
-        back_left.getPosition(), 
-        back_right.getPosition()
+        front_left.getPosition(1), 
+        front_right.getPosition(2),
+        back_left.getPosition(3), 
+        back_right.getPosition(4)
       });
 
     Logger.recordOutput("Pose", getPose());
     // Logger.recordOutput("Odometry", m_odometry);
     Logger.recordOutput("States", new SwerveModuleState[]{
-      back_left.getState(),
-      back_right.getState(),
       front_left.getState(),
-      front_right.getState()
+      front_right.getState(),
+      back_left.getState(),
+      back_right.getState()
     });
+
+    Logger.recordOutput("Gyro", m_gyro.getAngle()%360);
+
+    Logger.recordOutput("FLTurnPosition", front_left.getTurnPosition());
+    Logger.recordOutput("FRTurnPosition", front_right.getTurnPosition());
+    Logger.recordOutput("BLTurnPosition", back_left.getTurnPosition());
+    Logger.recordOutput("BRTurnPosition", back_right.getTurnPosition());
+    
   }
 }
